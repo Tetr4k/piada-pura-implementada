@@ -1,6 +1,7 @@
 
+#define PORTA_SERVIDOR 8888
 
-int main() {
+int main()  {
 
     // inicializar o socket de escuta
     // Criar a lista de contatos

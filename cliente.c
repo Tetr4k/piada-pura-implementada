@@ -1,6 +1,8 @@
 
+#define PORTA_SERVIDOR 8888
 
-int main() {
+//args: <nome> <porta> <ipServidor>
+int main(int argc, char *argv[])  {
 
     // Inicializar a thread do socket de escuta
     // Enviar as mensagens, criando a thread do socketEnvia
