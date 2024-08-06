@@ -13,5 +13,4 @@ typedef struct {
 	int porta;
 } contato;
 
-contato lista_contatos[NUM_CONTATOS];
 // 1|002|matheus|ip|porta|oi

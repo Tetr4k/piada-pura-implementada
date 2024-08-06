@@ -3,6 +3,10 @@
 #include "lib/socketEscuta.h"
 #include "lib/estruturas.h"
 
+int idx_contatos = 0;
+contato lista_contatos[NUM_CONTATOS];
+
+
 int main(int argc, char *argv[]) {
     if (argc != 4) {
         printf("Uso: %s <IP do Servidor> <Porta> <Sua_Porta>\n", argv[0]);
