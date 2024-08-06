@@ -1,5 +1,5 @@
 // No codeblocks inclua no menu em: Project -> Build Options... -> Linker settings -> Other link options -l wsock32
-//#define WIN // Se não for no windows comente essa linha e compile no terminal: gcc -o ts ts.c
+//#define WIN // Se nï¿½o for no windows comente essa linha e compile no terminal: gcc -o ts ts.c
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -15,25 +15,25 @@
 
 #define PORTA_SERVIDOR_TCP 9999
 
-#define MAXPENDING 5    /* Número máximo de requisições para conexão pendentes */
+#define MAXPENDING 5    /* Nï¿½mero mï¿½ximo de requisiï¿½ï¿½es para conexï¿½o pendentes */
 
 int criar_socket(int porta)
 {
     int sock;
-    struct sockaddr_in endereco; /* Endereço Local */
+    struct sockaddr_in endereco; /* Endereï¿½o Local */
 
-    /* Criação do socket TCP para recepção e envio de pacotes */
+    /* Criaï¿½ï¿½o do socket TCP para recepï¿½ï¿½o e envio de pacotes */
     if ((sock = socket(PF_INET, SOCK_STREAM, 0)) < 0)
     {
-        printf("\nErro na criação do socket!\n");fflush(stdout);
+        printf("\nErro na criaï¿½ï¿½o do socket!\n");fflush(stdout);
         return(-1);
     }
 
     if (porta > 0)
     {
-        /* Construção da estrutura de endereço local */
+        /* Construï¿½ï¿½o da estrutura de endereï¿½o local */
         memset(&endereco, 0, sizeof(endereco));       /* Zerar a estrutura */
-        endereco.sin_family      = AF_INET;           /* Família de endereçamento da Internet */
+        endereco.sin_family      = AF_INET;           /* Famï¿½lia de endereï¿½amento da Internet */
         endereco.sin_addr.s_addr = htonl(INADDR_ANY); /* Qualquer interface de entrada */
         endereco.sin_port        = htons(porta);      /* Porta local */
 
@@ -44,7 +44,7 @@ int criar_socket(int porta)
            return(-1);
         }
 
-        /* Indica que o socket escutara as conexões */
+        /* Indica que o socket escutara as conexï¿½es */
         if (listen(sock, MAXPENDING) < 0)
         {
            printf("\nErro no listen()!\n");fflush(stdout);
@@ -59,13 +59,13 @@ int criar_socket(int porta)
 int aceitar_conexao(int sock)
 {
     int                socket_cliente;
-    struct sockaddr_in endereco; /* Endereço Local */
+    struct sockaddr_in endereco; /* Endereï¿½o Local */
     int                tamanho_endereco;
 
-    /* Define o tamanho do endereço de recepção e envio */
+    /* Define o tamanho do endereï¿½o de recepï¿½ï¿½o e envio */
     tamanho_endereco = sizeof(endereco);
 
-    /* Aguarda pela conexão de um cliente */
+    /* Aguarda pela conexï¿½o de um cliente */
     if ((socket_cliente = accept(sock, (struct sockaddr *) &endereco, &tamanho_endereco)) < 0)
     {
         printf("\nErro no accept()!\n");fflush(stdout);
@@ -79,10 +79,10 @@ int receber_mensagem(char *mensagem,int sock)
     /* Limpar o buffer da mensagem */
     memset((void *) mensagem,(int) NULL,TAM_MENSAGEM);
 
-    /* Espera pela recepção de alguma mensagem do cliente conectado*/
+    /* Espera pela recepï¿½ï¿½o de alguma mensagem do cliente conectado*/
     if (recv(sock, mensagem, TAM_MENSAGEM, 0) < 0)
     {
-        printf("\nErro na recepção da mensagem\n");fflush(stdout);
+        printf("\nErro na recepï¿½ï¿½o da mensagem\n");fflush(stdout);
         return(-1);
     }
 
@@ -93,7 +93,7 @@ int receber_mensagem(char *mensagem,int sock)
 
 int enviar_mensagem(char *mensagem,int sock)
 {
-    /* Devolve o conteúdo da mensagem para o cliente */
+    /* Devolve o conteï¿½do da mensagem para o cliente */
     if (send(sock, mensagem, strlen(mensagem), 0) != strlen(mensagem))
     {
         printf("\nErro no envio da mensagem\n");fflush(stdout);
@@ -108,29 +108,29 @@ int enviar_mensagem(char *mensagem,int sock)
 int main()
 {
     int                sock;                   /* Socket */
-    int                socket_cliente;         /* Socket de conexão com o cliente */
-    int                resultado;              /* Resultado das funções */
-    char               mensagem[TAM_MENSAGEM]; /* Buffer para a recepção da string de echo */
-#ifdef WIN
-    WORD wPackedValues;
-    WSADATA  SocketInfo;
-    int      nLastError,
-	         nVersionMinor = 1,
-	         nVersionMajor = 1;
-    wPackedValues = (WORD)(((WORD)nVersionMinor)<< 8)|(WORD)nVersionMajor;
-    nLastError = WSAStartup(wPackedValues, &SocketInfo);
-#endif
+    int                socket_cliente;         /* Socket de conexï¿½o com o cliente */
+    int                resultado;              /* Resultado das funï¿½ï¿½es */
+    char               mensagem[TAM_MENSAGEM]; /* Buffer para a recepï¿½ï¿½o da string de echo */
+    #ifdef WIN
+        WORD wPackedValues;
+        WSADATA  SocketInfo;
+        int      nLastError,
+                nVersionMinor = 1,
+                nVersionMajor = 1;
+        wPackedValues = (WORD)(((WORD)nVersionMinor)<< 8)|(WORD)nVersionMajor;
+        nLastError = WSAStartup(wPackedValues, &SocketInfo);
+    #endif
 
     sock = criar_socket(PORTA_SERVIDOR_TCP);
     if (sock < 0)
     {
-        printf("\nErro na criação do socket!\n");
+        printf("\nErro na criaï¿½ï¿½o do socket!\n");
         return(1);
     }
 
     for (;;) /* Loop eterno */
     {
-        /* Aguarda por uma conexão e a aceita criando o socket de contato com o cliente */
+        /* Aguarda por uma conexï¿½o e a aceita criando o socket de contato com o cliente */
         socket_cliente = aceitar_conexao(sock);
         if (socket_cliente == 0)
         {
@@ -146,7 +146,7 @@ int main()
             return(1);
         }
 
-        /* Devolve o conteúdo da mensagem para o cliente */
+        /* Devolve o conteï¿½do da mensagem para o cliente */
         resultado = enviar_mensagem(mensagem,socket_cliente);
         if (resultado < 0)
         {
@@ -156,5 +156,5 @@ int main()
 
         close(socket_cliente);    /* Fecha o socket do cliente */
     }
-    /*não passa por aqui */
+    /*nï¿½o passa por aqui */
 }
