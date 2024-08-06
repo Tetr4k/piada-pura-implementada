@@ -65,9 +65,7 @@ int socket_escuta(int porta){
         return -1;
     }
 
-    printf("1\n");
     cria_thread(thread_socket_escuta, socket_escuta);
-    printf("2\n");
     return socket_escuta;
 }
 

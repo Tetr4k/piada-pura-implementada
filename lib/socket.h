@@ -12,8 +12,7 @@
 #endif
 
 #include <pthread.h>
-
-#include "estruturas.h"
+#include "defines.h"
 
 
 int criar_socket(int porta)
