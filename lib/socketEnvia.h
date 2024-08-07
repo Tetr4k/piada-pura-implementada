@@ -21,8 +21,11 @@ int socket_envia(char* server_ip, int porta_servidor, char* mensagem){
     if(conectar(sock, server_ip, porta_servidor)<0) 
         return -1;
 
+    // Aqui vem a criação das mensagens
     enviar_mensagem(mensagem, sock);
     receber_mensagem(mensagem, sock);
+    //Tratamento da resposta
+
     close(sock);
     return 1;
 }

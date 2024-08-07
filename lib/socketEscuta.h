@@ -17,6 +17,7 @@ void* thread_socket_comunicacao(void* sock){
         return NULL;
     }
 
+    // Aqui vem a logica do processamento da mensagem
     enviar_mensagem("OK!", socket_cliente);
     close(socket_cliente);
 }
@@ -29,8 +30,6 @@ void* thread_socket_escuta(void* sock_escuta){
     // responder
 
     int sock = *((int*)sock_escuta);
-    printf("sock: %d\n", sock);
-    //free(sock_escuta);
 
     for (;;) {
         // Aguarda conexão e cria um socket para se comunicar com o cliente
