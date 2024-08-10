@@ -29,6 +29,7 @@ contato lista_contatos[NUM_CONTATOS];
 void tratar_pacote(char* pacote){
 
 	int ito = strtok(pacote, DELIMITER);
+	int tam_pacote = atoi(strtok(NULL, DELIMITER));
 
 	int tam_pacote = strtok(NULL, DELIMITER);
 
