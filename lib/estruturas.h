@@ -63,6 +63,18 @@ void tratar_pacote(char* pacote){
 	}
 }
 
-// Função para tratar mensagem 
+// servidor recebendo mensagem de solicitação de lista
+void solicita_lista_servidor(){
+	char* nome = strtok(NULL, DELIMITER);
+	char* IP = strtok(NULL, DELIMITER);
+	char* PORTA = strtok(NULL, DELIMITER);
+	criar_mensagem_lista_de_contato(); // mensagem de resposta do servidor
+}
+
+void m_print_contato(contato tmp){
+    printf("nome: %s\n", tmp.nome);
+    printf("ip: %s\n", tmp.ip);
+    printf("porta: %d\n", tmp.porta);
+}
 
 // Função para criar contato
