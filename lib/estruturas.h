@@ -27,7 +27,10 @@ typedef struct {
 contato lista_contatos[NUM_CONTATOS] = {0};
 // 1|002|matheus|ip|porta|oi
 
-
+/// Funções para manipular dados
+char* criar_mensagem_lista_de_contato();
+bool contato_esta_vazio();
+void solicita_lista_servidor();
 
 // Função para tratar pacote e redirecionar para o tipo de operação
 void tratar_pacote(char* pacote){
