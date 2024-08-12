@@ -28,10 +28,8 @@ contato lista_contatos[NUM_CONTATOS] = {0};
 // Função para tratar pacote e redirecionar para o tipo de operação
 void tratar_pacote(char* pacote){
 
-	int ito = strtok(pacote, DELIMITER);
+	int ito = atoi(strtok(pacote, DELIMITER));
 	int tam_pacote = atoi(strtok(NULL, DELIMITER));
-
-	int tam_pacote = strtok(NULL, DELIMITER);
 
 	switch (ito)
 	{
