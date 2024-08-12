@@ -51,6 +51,7 @@ void tratar_pacote(char* pacote){
 		break;
 	case 5:
 		// MANDAR MENSAGEM
+		mandar_mensagem_cliente();
 		break;
 	case 6:
 		// MANDAR MENSAGEM BROADCAST
@@ -110,4 +111,18 @@ char* criar_mensagem_lista_de_contato(){
 	pacote = realloc(pacote, pacote_tam);
 	strcat(pacote, msg);
 	return pacote;
+}
+
+void mandar_mensagem_cliente(){
+	char* nome_r = strtok(NULL, DELIMITER);
+	char* IP_r = strtok(NULL, DELIMITER);
+	char* PORTA_r = strtok(NULL, DELIMITER);
+	char* msg = strtok(NULL, DELIMITER);
+
+	if(msg == NULL){
+		//mensagem de erro
+	}else{
+		// printar mensagem (função? direto aqui?)
+		//mensagem de ok
+	}
 }
