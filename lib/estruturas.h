@@ -12,7 +12,7 @@ typedef struct{
 } pacote;
 
 typedef struct {
-	char nome[MAX_STRING];
+	char nome[MAX_NAME];
 	char ip[16];
 	int porta;
 } contato;
@@ -64,11 +64,12 @@ void tratar_pacote(char* pacote){
 }
 
 // servidor recebendo mensagem de solicitação de lista
+// return char*?
 void solicita_lista_servidor(){
 	char* nome = strtok(NULL, DELIMITER);
 	char* IP = strtok(NULL, DELIMITER);
 	char* PORTA = strtok(NULL, DELIMITER);
-	criar_mensagem_lista_de_contato(); // mensagem de resposta do servidor
+	criar_mensagem_lista_de_contato(); // retunr pacote mas... como vai interagir com o servidor?
 }
 
 void m_print_contato(contato tmp){
