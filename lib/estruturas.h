@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include<string.h>
+#include <stdbool.h>
 
 #define MAX_STRING 255
 #define NUM_CONTATOS 10
