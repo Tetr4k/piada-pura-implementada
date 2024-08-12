@@ -102,7 +102,7 @@ char* criar_mensagem_lista_de_contato(){
 		}
 		m_concat_str(&msg, lista_contatos[i]); // transforma contato em string
 	}
-	
+
 	// montagem do pacote
 	sprintf(pacote, "2|%03d", strlen(msg)-1);
 	pacote_tam = strlen(pacote) + strlen(msg);
