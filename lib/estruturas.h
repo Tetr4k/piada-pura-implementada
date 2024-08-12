@@ -47,6 +47,7 @@ void tratar_pacote(char* pacote){
 		break;
 	case 4:
 		// SOLICITAÇÃO DE LISTA
+		solicita_lista_servidor();
 		break;
 	case 5:
 		// MANDAR MENSAGEM
