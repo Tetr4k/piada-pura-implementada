@@ -4,8 +4,11 @@
 
 #define MAX_STRING 255
 #define NUM_CONTATOS 10
+#define MAX_NAME 10
 #define NUM_MSG 5
 #define DELIMITER "|"
+#define ERRO 1
+#define OK 0
 
 // Talvez necessário
 typedef struct{
