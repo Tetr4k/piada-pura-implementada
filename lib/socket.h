@@ -102,14 +102,7 @@ int aceitar_conexao(int sock)
     return(socket_cliente);
 }
 
-int cria_thread(void* (*function)(void*), int param) {
-    // Alocar dinamicamente a memória para o parâmetro
-    int *param_ptr = malloc(sizeof(int));
-    if (param_ptr == NULL) {
-        printf("Erro ao alocar memória\n");
-        return -1;
-    }
-    *param_ptr = param;
+int cria_thread(void* (*function)(void*), void* param) {
 
     #ifdef WIN
     HANDLE thread;
@@ -120,14 +113,14 @@ int cria_thread(void* (*function)(void*), int param) {
         NULL,               // Atributos de segurança
         0,                  // Tamanho da pilha (0 = tamanho padrão)
         function,           // Função que a thread vai executar
-        param_ptr,          // Parâmetro passado para a função
+        param,              // Parâmetro passado para a função
         0,                  // Opções de criação
         &threadId           // ID da thread
     );
 
     if (thread == NULL) {
         printf("Erro ao criar a thread\n");
-        free(param_ptr);
+        free(param);
         return -1;
     }
 
@@ -135,9 +128,9 @@ int cria_thread(void* (*function)(void*), int param) {
     pthread_t thread;
 
     // Cria uma nova thread
-    if (pthread_create(&thread, NULL, function, param_ptr)) {
+    if (pthread_create(&thread, NULL, function, param)) {
         printf("Erro ao criar a thread\n");
-        free(param_ptr);
+        free(param);
         return -1;
     }
     pthread_detach(thread);  // Detach a thread para que seus recursos sejam liberados automaticamente ao terminar

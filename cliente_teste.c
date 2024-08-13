@@ -19,7 +19,7 @@ int main(int argc, char *argv[]) {
     char mensagem[MAX_STRING]="\0";
 
     
-    int sock_escuta = socket_escuta(porta_escuta);
+    //int sock_escuta = socket_escuta(porta_escuta);
 
     while(1){
         memset((void *) mensagem,'\0',MAX_STRING);
@@ -34,6 +34,6 @@ int main(int argc, char *argv[]) {
 
     }
 
-    close(sock_escuta);
+    //close(sock_escuta);
     return 0;
 }

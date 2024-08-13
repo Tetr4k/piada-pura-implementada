@@ -8,7 +8,7 @@ void* thread_socket_comunicacao(void* sock){
     // fecha o socket
 
     int socket_cliente = *((int*)sock);
-    //free(sock);
+    free(sock);
 
     char mensagem[MAX_STRING];    /* Buffer para a recepção da mensagem*/
 
@@ -30,11 +30,22 @@ void* thread_socket_escuta(void* sock_escuta){
     // responder
 
     int sock = *((int*)sock_escuta);
+    //free(sock_escuta);
 
     for (;;) {
         // Aguarda conexão e cria um socket para se comunicar com o cliente
         int socket_cliente = aceitar_conexao(sock);
-        cria_thread(thread_socket_comunicacao, socket_cliente);
+
+        // Alocar memória para passar o socket do cliente para a thread
+        int* sock_cliente_ptr = malloc(sizeof(int));
+
+        if (sock_cliente_ptr == NULL) {
+            printf("Erro ao alocar memória para o socket do cliente\n");
+            continue;
+        }
+        *sock_cliente_ptr = socket_cliente;
+
+        cria_thread(thread_socket_comunicacao, (void*)sock_cliente_ptr);
     }
 
     close(sock);
@@ -64,7 +75,15 @@ int socket_escuta(int porta){
         return -1;
     }
 
-    cria_thread(thread_socket_escuta, socket_escuta);
+    // Alocar memória para passar o socket de escuta para a thread
+    int* sock_escuta_ptr = malloc(sizeof(int));
+    if (sock_escuta_ptr == NULL) {
+        printf("Erro ao alocar memória para o socket de escuta\n");
+        return -1;
+    }
+    *sock_escuta_ptr = socket_escuta;
+
+    cria_thread(thread_socket_escuta, (void*)sock_escuta_ptr);
     return socket_escuta;
 }
 
