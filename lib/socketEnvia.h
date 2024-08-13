@@ -34,10 +34,10 @@ Servidor:
     enviar_mensagem(mensagem, sock);      4
 */
 
-int socket_envia(char* server_ip, int porta_servidor, char* mensagem){
+int socket_envia(char* dst_ip, int dst_porta, char* mensagem){
     int sock = criar_socket(0);
     
-    if(conectar(sock, server_ip, porta_servidor)<0) 
+    if(conectar(sock, dst_ip, dst_porta)<0) 
         return -1;
 
     // Aqui vem a criação das mensagens
