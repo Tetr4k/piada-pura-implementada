@@ -17,7 +17,13 @@ void* thread_socket_comunicacao(void* sock){
         return NULL;
     }
 
-    // Aqui vem a logica do processamento da mensagem
+    /*
+    // Com tratar_mensagem
+    tratar_mensagem(mensagem);
+    enviar_mensagem(mensagem, socket_cliente);
+    */
+
+    // Sem tratar mensagem
     enviar_mensagem("OK!", socket_cliente);
     close(socket_cliente);
 }

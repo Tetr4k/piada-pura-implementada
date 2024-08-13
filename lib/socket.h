@@ -14,6 +14,7 @@
 #include <pthread.h>
 #include "defines.h"
 
+// Funções de sockets
 
 int criar_socket(int porta)
 {
@@ -100,6 +101,32 @@ int aceitar_conexao(int sock)
         return(0);
     }
     return(socket_cliente);
+}
+
+// ==============================================
+// Funções para Threads
+
+
+// Definição dos mutexes
+pthread_mutex_t mutex_contatos, mutex_mensagens;
+
+int init_mutexes(){
+    if (pthread_mutex_init(&mutex_contatos, NULL) != 0) {
+        printf("Erro ao inicializar o mutex\n");
+        return 0;
+    }
+
+    if (pthread_mutex_init(&mutex_mensagens, NULL) != 0) {
+        printf("Erro ao inicializar o mutex\n");
+        return 0;
+    }
+
+    return 1;
+}
+
+int destroy_mutexes(){
+    pthread_mutex_destroy(&mutex_contatos);
+    pthread_mutex_destroy(&mutex_mensagens);
 }
 
 int cria_thread(void* (*function)(void*), void* param) {

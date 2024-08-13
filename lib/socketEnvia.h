@@ -15,16 +15,24 @@ int conectar(int sock, char *IP, int porta){
     return 1;
 }
 
-int socket_envia(char* server_ip, int porta_servidor, char* mensagem){
+
+int socket_envia(char* dst_ip, int dst_porta, char* mensagem){
     int sock = criar_socket(0);
     
-    if(conectar(sock, server_ip, porta_servidor)<0) 
+    if(conectar(sock, dst_ip, dst_porta)<0) 
         return -1;
 
-    // Aqui vem a criação das mensagens
+    // Mensagem já foi construida fora do socket
     enviar_mensagem(mensagem, sock);
+
+    /*
+    // Com tratar_mensagem
     receber_mensagem(mensagem, sock);
-    //Tratamento da resposta
+    tratar_mensagem(mensagem);
+    */
+
+    //Sem tratamento da resposta
+    receber_mensagem(mensagem, sock);
 
     close(sock);
     return 1;
