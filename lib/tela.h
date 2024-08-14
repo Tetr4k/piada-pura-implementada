@@ -84,7 +84,9 @@ int main(int argc, char *argv[])  {
     printf("Porta: %d\n", porta);
     printf("IP do Servidor: %s\n", IP); 
 
-    //func de registro (? 
+    //SERVIDOR.c (add contato)
+    //print vc foi conectado 
+    //recebe lista
 
     do {
         mostrar_menu();
