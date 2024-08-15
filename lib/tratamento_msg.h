@@ -5,10 +5,15 @@
 #include "./estruturas.h"
 #include "./defines.h"
 
-/// Funções para manipular dados
-char* criar_mensagem_lista_de_contato();
-bool contato_esta_vazio();
-void solicita_lista_servidor();
+
+void tratar_pacote(char* pacote);			// Redireciona para um tratamento de pacote de acordo com a ITO
+char* devolver_lista_servidor(); 			// "|NOME1|IP1|PORTA1|NOME2|IP2|PORTA2"
+void receber_resposta();				// Trata mensagem de ERRO/OK
+void mandar_resposta(int ito, char* msg)		// Monta pacote de mensagem de ERRO/OK
+bool contato_esta_vazio(); 				// (AUX)Verifica se dado contato está vazio
+void m_concat_str(char** dest, contato contato); 	// (AUX) Concatena informações do contato em uma string => "|NOME|IP|PORTA"
+void print_contatos(); 					// Função para imprimir lista de contatos
+
 
 // Função para tratar pacote e redirecionar para o tipo de operação
 void tratar_pacote(char* pacote){
