@@ -24,10 +24,10 @@ void tratar_pacote(char* pacote){
 	switch (ito)
 	{
 	case 0:
-		// ERRO
+		receber_resposta(); // ERRO
 		break;
 	case 1:
-		// SUCESSO
+		receber_resposta(); // SUCESSO
 		break;
 	case 2:
 		// DEVOLVE LISTA
@@ -36,8 +36,7 @@ void tratar_pacote(char* pacote){
 		// SOLICITAÇÃO DE REGISTRO
 		break;
 	case 4:
-		// MANDAR MENSAGEM
-		receber_mensagem_cliente();
+		receber_mensagem_cliente(); // TRATAR MENSAGEM RECEBIDA
 		break;
 	case 5:
 		// MANDAR MENSAGEM BROADCAST
@@ -100,7 +99,6 @@ char* devolver_lista_servidor(){ // ""
 	return pacote; // retorna ou copia para o pacote passado em parâmetro?
 }
 
-
 void mandar_resposta(int ito, char* msg){
 	char* pacote = malloc(5);
 	int pacote_tam;
@@ -116,6 +114,7 @@ void receber_resposta(){
 	char* msg = strtok(NULL, DELIMITER);
 	printf("%s!\n",msg);
 }
+
 void receber_mensagem_cliente(){
 	char* nome_r = strtok(NULL, DELIMITER);
 	char* IP_r = strtok(NULL, DELIMITER);
