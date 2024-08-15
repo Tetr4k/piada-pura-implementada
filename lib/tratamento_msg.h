@@ -118,15 +118,10 @@ void receber_mensagem_cliente(){
 	char* msg = strtok(NULL, DELIMITER);
 
 	if(msg == NULL){
-		//mensagem de erro
+		mandar_resposta(ERRO,"ERRO");
 	}else{
+		mandar_resposta(OK,"OK");
 		// printar mensagem (função? direto aqui?)
 		//mensagem de ok
 	}
-}
-
-void print_contato(contato tmp){
-    printf("nome: %s\n", tmp.nome);
-    printf("ip: %s\n", tmp.ip);
-    printf("porta: %d\n", tmp.porta);
 }
