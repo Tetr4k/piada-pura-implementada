@@ -45,19 +45,18 @@ void tratar_pacote(char* pacote){
 	}
 }
 
-// servidor recebendo mensagem de solicitação de lista
-// return char*?
-void solicita_lista_servidor(){
-	char* nome = strtok(NULL, DELIMITER);
-	char* IP = strtok(NULL, DELIMITER);
-	char* PORTA = strtok(NULL, DELIMITER);
-	criar_mensagem_lista_de_contato(); // retunr pacote mas... como vai interagir com o servidor?
-}
-
-void m_print_contato(contato tmp){
-    printf("nome: %s\n", tmp.nome);
-    printf("ip: %s\n", tmp.ip);
-    printf("porta: %d\n", tmp.porta);
+void print_contatos(){
+	for(int i = 0; i < NUM_CONTATOS; i++){ // itera em vetor de contato até chegar em campo vazio ou fim de vetor
+		contato_esta_vazio(lista_contatos[i])){
+			printf("Saindo\n");
+			break;
+		}
+		printf("________________________");
+		printf("Nome: %s\n", lista_contatos[i].nome);
+		printf("IP: %s\n", lista_contatos[i].ip);
+		printf("Porta: %d\n", lista_contatos[i].porta);
+		printf("________________________\n");
+	}
 }
 
 bool contato_esta_vazio(contato tmp){
