@@ -107,7 +107,11 @@ void mandar_resposta(int ito, char* msg){
 
 }
 
-void mandar_mensagem_cliente(){
+void receber_resposta(){
+	char* msg = strtok(NULL, DELIMITER);
+	printf("%s!\n",msg);
+}
+void receber_mensagem_cliente(){
 	char* nome_r = strtok(NULL, DELIMITER);
 	char* IP_r = strtok(NULL, DELIMITER);
 	char* PORTA_r = strtok(NULL, DELIMITER);
