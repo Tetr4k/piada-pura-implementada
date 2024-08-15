@@ -71,12 +71,14 @@ void m_concat_str(char** dest, contato contato){
     *dest = realloc(*dest, tamanho_total);
     strcat(*dest,tmp);
 }
+
 // return: string de mensagem (type: char*)
-char* criar_mensagem_lista_de_contato(){
+char* devolver_lista_servidor(){ // ""
 	char* PORTA;
 	char* msg = malloc(1);
 	char* pacote = malloc(5);
 	int pacote_tam;
+
 	for(int i = 0; i < NUM_CONTATOS; i++){ // itera em vetor de contato até chegar em campo vazio ou fim de vetor
 		if(contato_esta_vazio(lista_contatos[i])){
 			printf("Saindo\n");
