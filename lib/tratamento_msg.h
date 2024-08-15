@@ -31,17 +31,13 @@ void tratar_pacote(char* pacote){
 		// SOLICITAÇÃO DE REGISTRO
 		break;
 	case 4:
-		// SOLICITAÇÃO DE LISTA
-		solicita_lista_servidor();
+		// MANDAR MENSAGEM
+		receber_mensagem_cliente();
 		break;
 	case 5:
-		// MANDAR MENSAGEM
-		mandar_mensagem_cliente();
-		break;
-	case 6:
 		// MANDAR MENSAGEM BROADCAST
 		break;
-	case 7:
+	case 6:
 		// SOLICITAÇÃO PARA DEDSCONECTAR
 		break;
 	default:
@@ -109,4 +105,10 @@ void mandar_mensagem_cliente(){
 		// printar mensagem (função? direto aqui?)
 		//mensagem de ok
 	}
+}
+
+void print_contato(contato tmp){
+    printf("nome: %s\n", tmp.nome);
+    printf("ip: %s\n", tmp.ip);
+    printf("porta: %d\n", tmp.porta);
 }
