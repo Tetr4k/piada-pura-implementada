@@ -91,7 +91,20 @@ char* devolver_lista_servidor(){ // ""
 	pacote_tam = strlen(pacote) + strlen(msg);
 	pacote = realloc(pacote, pacote_tam);
 	strcat(pacote, msg);
-	return pacote;
+
+	return pacote; // retorna ou copia para o pacote passado em parâmetro?
+}
+
+
+void mandar_resposta(int ito, char* msg){
+	char* pacote = malloc(5);
+	int pacote_tam;
+
+	sprintf(pacote, "%s|%03d",ito, strlen(msg)-1); // testar
+	pacote_tam = strlen(pacote) + strlen(msg);
+	pacote = realloc(pacote, pacote_tam);
+	strcat(pacote, msg);
+
 }
 
 void mandar_mensagem_cliente(){
