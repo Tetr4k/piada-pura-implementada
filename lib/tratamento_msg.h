@@ -13,6 +13,8 @@ void mandar_resposta(int ito, char* msg)		// Monta pacote de mensagem de ERRO/OK
 bool contato_esta_vazio(); 				// (AUX)Verifica se dado contato está vazio
 void m_concat_str(char** dest, contato contato); 	// (AUX) Concatena informações do contato em uma string => "|NOME|IP|PORTA"
 void print_contatos(); 					// Função para imprimir lista de contatos
+void broadcast_message(const char *message); 		// Função para enviar mensagem em broadcast
+void desconectar_cliente(int client_socket); 		// Função para desconectar cliente
 
 
 // Função para tratar pacote e redirecionar para o tipo de operação
@@ -39,14 +41,59 @@ void tratar_pacote(char* pacote){
 		receber_mensagem_cliente(); // TRATAR MENSAGEM RECEBIDA
 		break;
 	case 5:
+		{
 		// MANDAR MENSAGEM BROADCAST
+			char* msg = strtok(NULL, DELIMITER);
+	            	if (msg != NULL) {
+	                broadcast_message(msg);
+	            	} else {
+	                mandar_resposta(ERRO, "ERRO");
+	            	}
+		}
 		break;
 	case 6:
-		// SOLICITAÇÃO PARA DEDSCONECTAR
+		{
+			// SOLICITAÇÃO PARA DEDSCONECTAR
+			int client_socket = atoi(strtok(NULL, DELIMITER));  // Obtém o socket do cliente que solicitou a desconexão
+	            	desconectar_cliente(client_socket);
+		}
 		break;
 	default:
 		break;
 	}
+}
+
+void broadcast_message(const char *message) {
+    char package[256];
+    snprintf(package, sizeof(package), "ITO5:%s", message);
+
+    for (int i = 0; i < num_clients; i++) {
+        if (send(client_sockets[i], package, strlen(package), 0) == -1) {
+            perror("Erro ao enviar mensagem broadcast");
+        }
+    }
+}
+
+void desconectar_cliente(int client_socket) {
+    // Enviar mensagem de confirmação de desconexão
+    mandar_resposta(OK, "Desconectado com sucesso");
+
+    // Fechar o socket do cliente
+    close(client_socket);
+
+    // Remover o cliente da lista de clientes
+    for (int i = 0; i < num_clients; i++) {
+        if (client_sockets[i] == client_socket) {
+            // Desloca os outros sockets para preencher o espaço do cliente desconectado
+            for (int j = i; j < num_clients - 1; j++) {
+                client_sockets[j] = client_sockets[j + 1];
+            }
+            num_clients--;
+            break;
+        }
+    }
+
+    printf("Cliente desconectado: socket %d\n", client_socket);
 }
 
 void print_contatos(){
