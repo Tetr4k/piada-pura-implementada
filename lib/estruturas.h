@@ -15,3 +15,5 @@ typedef struct {
 
 contato lista_contatos[NUM_CONTATOS] = {0};
 // 1|002|matheus|ip|porta|oi
+
+int qtdContatos = 0;

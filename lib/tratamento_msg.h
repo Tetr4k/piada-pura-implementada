@@ -9,7 +9,7 @@
 void tratar_pacote(char* pacote);			// Redireciona para um tratamento de pacote de acordo com a ITO
 char* devolver_lista_servidor(); 			// "|NOME1|IP1|PORTA1|NOME2|IP2|PORTA2"
 void receber_resposta();				// Trata mensagem de ERRO/OK
-void mandar_resposta(int ito, char* msg)		// Monta pacote de mensagem de ERRO/OK
+void mandar_resposta(int ito, char* msg);		// Monta pacote de mensagem de ERRO/OK
 bool contato_esta_vazio(); 				// (AUX)Verifica se dado contato está vazio
 void m_concat_str(char** dest, contato contato); 	// (AUX) Concatena informações do contato em uma string => "|NOME|IP|PORTA"
 void print_contatos(); 					// Função para imprimir lista de contatos
@@ -29,12 +29,48 @@ void tratar_pacote(char* pacote){
 	case 1:
 		receber_resposta(); // SUCESSO
 		break;
-	case 2:
-		// DEVOLVE LISTA
-		break;
 	case 3:
 		// SOLICITAÇÃO DE REGISTRO
-		break;
+
+		contato novoContato;
+
+		if (qtdContatos == NUM_CONTATOS){
+			mandar_resposta(3, "ERRO: MAXIMO DE CLIENTES ATINGIDO!");
+			return;
+		}
+
+		// captura e valida dados
+		char* nome	= strtok(NULL, DELIMITER);
+		char* ip	= strtok(NULL, DELIMITER);
+		char* porta	= strtok(NULL, DELIMITER);
+
+		if (nome == NULL || ip == NULL || porta == NULL){
+			mandar_resposta(3, "ERRO: FALHA AO CAPTURAR UM TOKEN!");
+			return;
+		}
+
+		// adiciona contato a lista de contatos
+		qtdContatos++;
+
+		contato novoContato;
+		sprintf(novoContato.nome, "%s", nome);
+		sprintf(novoContato.ip, "%s", ip);
+		novoContato.porta	= atoi(porta);
+
+		lista_contatos[qtdContatos-1] = novoContato;
+	case 2:
+		// DEVOLVE LISTA
+
+		char str_lista[] = "";
+
+		for(int i=0; i<qtdContatos; i++){
+			char tmp[40];
+			sprintf(tmp, "|%s|%s|%d", lista_contatos[i].nome, lista_contatos[i].ip, lista_contatos[i].porta);
+			strcat(str_lista, tmp);
+		}
+
+		mandar_resposta(1, str_lista);
+		return;
 	case 4:
 		receber_mensagem_cliente(); // TRATAR MENSAGEM RECEBIDA
 		break;
