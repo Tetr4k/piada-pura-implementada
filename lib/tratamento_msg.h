@@ -103,7 +103,7 @@ void broadcast_message(const char *message) {
     char package[256];
     snprintf(package, sizeof(package), "ITO5:%s", message);
 
-    for (int i = 0; i < num_clients; i++) {
+    for (int i = 0; i < qtdContatos; i++) {
         if (send(client_sockets[i], package, strlen(package), 0) == -1) {
             perror("Erro ao enviar mensagem broadcast");
         }
@@ -118,13 +118,13 @@ void desconectar_cliente(int client_socket) {
     close(client_socket);
 
     // Remover o cliente da lista de clientes
-    for (int i = 0; i < num_clients; i++) {
+    for (int i = 0; i < qtdContatos; i++) {
         if (client_sockets[i] == client_socket) {
             // Desloca os outros sockets para preencher o espaço do cliente desconectado
-            for (int j = i; j < num_clients - 1; j++) {
+            for (int j = i; j < qtdContatos - 1; j++) {
                 client_sockets[j] = client_sockets[j + 1];
             }
-            num_clients--;
+            qtdContatos--;
             break;
         }
     }
