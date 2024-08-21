@@ -5,6 +5,7 @@
 #include "./estruturas.h"
 #include "./defines.h"
 
+// Mudar mandar respostas: nome não intuitivo!!!!!!
 
 void tratar_pacote(char* pacote);			// Redireciona para um tratamento de pacote de acordo com a ITO
 char* devolver_lista_servidor(); 			// "|NOME1|IP1|PORTA1|NOME2|IP2|PORTA2"
