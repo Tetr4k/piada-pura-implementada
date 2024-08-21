@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include "./estruturas.h"
+#include "./defines.h"
 /*
 #ifdef WIN
 #include <winsock2.h>
@@ -40,13 +42,14 @@ void opcao_1() {
 
 void opcao_2() {
     limpaTela();
-    //func mensagem_broadcast()
+    //func mensagem_broadcast() // Mandar a mensagem como parâmetro
     printf("Você escolheu a Opção 2.\n");
 }
 
 void opcao_3() {
     limpaTela();
     //func receber_lista()
+    print_contatos();
     printf("Você escolheu a Opção 3.\n");
 }
 
