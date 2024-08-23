@@ -10,7 +10,7 @@
 void tratar_pacote(char* pacote);			// Redireciona para um tratamento de pacote de acordo com a ITO
 char* devolver_lista_servidor(); 			// "|NOME1|IP1|PORTA1|NOME2|IP2|PORTA2"
 void receber_resposta();				// Trata mensagem de ERRO/OK
-void mandar_resposta(int ito, char* msg);		// Monta pacote de mensagem de ERRO/OK
+void mandar_mensagem(int ito, char* msg);		// Monta pacote de mensagem
 bool contato_esta_vazio(); 				// (AUX)Verifica se dado contato está vazio
 void m_concat_str(char** dest, contato contato); 	// (AUX) Concatena informações do contato em uma string => "|NOME|IP|PORTA"
 void print_contatos(); 					// Função para imprimir lista de contatos
@@ -38,7 +38,7 @@ void tratar_pacote(char* pacote){
 		contato novoContato;
 
 		if (qtdContatos == NUM_CONTATOS){
-			mandar_resposta(3, "ERRO: MAXIMO DE CLIENTES ATINGIDO!");
+			mandar_mensagem(3, "ERRO: MAXIMO DE CLIENTES ATINGIDO!");
 			return;
 		}
 
@@ -48,7 +48,7 @@ void tratar_pacote(char* pacote){
 		char* porta	= strtok(NULL, DELIMITER);
 
 		if (nome == NULL || ip == NULL || porta == NULL){
-			mandar_resposta(3, "ERRO: FALHA AO CAPTURAR UM TOKEN!");
+			mandar_mensagem(3, "ERRO: FALHA AO CAPTURAR UM TOKEN!");
 			return;
 		}
 
@@ -72,7 +72,7 @@ void tratar_pacote(char* pacote){
 			strcat(str_lista, tmp);
 		}
 
-		mandar_resposta(1, str_lista);
+		mandar_mensagem(1, str_lista);
 		return;
 	case 4:
 		receber_mensagem_cliente(); // TRATAR MENSAGEM RECEBIDA
@@ -84,7 +84,7 @@ void tratar_pacote(char* pacote){
 	            	if (msg != NULL) {
 	                broadcast_message(msg);
 	            	} else {
-	                mandar_resposta(ERRO, "ERRO");
+	                mandar_mensagem(ERRO, "ERRO");
 	            	}
 		}
 		break;
@@ -113,7 +113,7 @@ void broadcast_message(const char *message) {
 
 void desconectar_cliente(int client_socket) {
     // Enviar mensagem de confirmação de desconexão
-    mandar_resposta(OK, "Desconectado com sucesso");
+    mandar_mensagem(OK, "Desconectado com sucesso");
 
     // Fechar o socket do cliente
     close(client_socket);
@@ -183,7 +183,7 @@ char* devolver_lista_servidor(){ // ""
 	return pacote; // retorna ou copia para o pacote passado em parâmetro?
 }
 
-void mandar_resposta(int ito, char* msg){
+void mandar_mensagem(int ito, char* msg){
 	char* pacote = malloc(5);
 	int pacote_tam;
 
@@ -206,9 +206,9 @@ void receber_mensagem_cliente(){
 	char* msg = strtok(NULL, DELIMITER);
 
 	if(msg == NULL){
-		mandar_resposta(ERRO,"ERRO");
+		mandar_mensagem(ERRO,"ERRO");
 	}else{
-		mandar_resposta(OK,"OK");
+		mandar_mensagem(OK,"OK");
 		// printar mensagem (função? direto aqui?)
 		//mensagem de ok
 	}
