@@ -12,3 +12,9 @@ typedef struct {
 	char ip[16];
 	int porta;
 } contato;
+
+// Lista de contatos
+int qtdContatos = 0;
+contato lista_contatos[NUM_CONTATOS] = {0};
+
+contato meu_contato;

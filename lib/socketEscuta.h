@@ -17,14 +17,12 @@ void* thread_socket_comunicacao(void* sock){
         return NULL;
     }
 
-    /*
-    // Com tratar_mensagem
-    tratar_mensagem(mensagem);
+    // Com tratar_pacote
+    tratar_pacote(mensagem);
     enviar_mensagem(mensagem, socket_cliente);
-    */
 
     // Sem tratar mensagem
-    enviar_mensagem("OK!", socket_cliente);
+    //enviar_mensagem("OK!", socket_cliente);
     close(socket_cliente);
 }
 

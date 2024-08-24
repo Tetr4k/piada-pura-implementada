@@ -2,20 +2,22 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
-#include "./estruturas.h"
+//#include "./estruturas.h"
 #include "./defines.h"
 
 // Mudar mandar respostas: nome não intuitivo!!!!!!
 
-void tratar_pacote(char* pacote);			// Redireciona para um tratamento de pacote de acordo com a ITO
-char* devolver_lista_servidor(); 			// "|NOME1|IP1|PORTA1|NOME2|IP2|PORTA2"
-void receber_resposta();				// Trata mensagem de ERRO/OK
-void mandar_mensagem(int ito, char* msg);		// Monta pacote de mensagem
-bool contato_esta_vazio(); 				// (AUX)Verifica se dado contato está vazio
-void m_concat_str(char** dest, contato contato); 	// (AUX) Concatena informações do contato em uma string => "|NOME|IP|PORTA"
-void print_contatos(); 					// Função para imprimir lista de contatos
-void broadcast_message(const char *message); 		// Função para enviar mensagem em broadcast
-void desconectar_cliente(int client_socket); 		// Função para desconectar cliente
+void tratar_pacote(char* pacote);									// Redireciona para um tratamento de pacote de acordo com a ITO
+char* devolver_lista_servidor(); 									// "|NOME1|IP1|PORTA1|NOME2|IP2|PORTA2"
+void receber_resposta();											// Trata mensagem de ERRO/OK
+char* criar_mensagem(int ito, char* msg);							// Monta pacote de mensagem
+bool contato_esta_vazio(); 											// (AUX)Verifica se dado contato está vazio
+void m_concat_str(char** dest, contato contato); 					// (AUX) Concatena informações do contato em uma string => "|NOME|IP|PORTA"
+void print_contatos(); 												// Função para imprimir lista de contatos
+void broadcast_message(const char *message); 						// Função para enviar mensagem em broadcast
+char* desconectar_cliente(char *nome, char *ip, int porta); 		// Função para desconectar cliente
+void cria_lista(char str_lista[]);									// Cria a lista de contato passada por referência
+void receber_mensagem_cliente();									// Processa a mensagem recebida e a coloca no buffer_msg
 
 
 // Função para tratar pacote e redirecionar para o tipo de operação
@@ -23,32 +25,34 @@ void tratar_pacote(char* pacote){
 
 	int ito = atoi(strtok(pacote, DELIMITER));
 	int tam_pacote = atoi(strtok(NULL, DELIMITER));
-	
+
+	// captura e valida dados
+	char* nome		= strtok(NULL, DELIMITER);
+	char* ip		= strtok(NULL, DELIMITER);
+	char* porta_str	= strtok(NULL, DELIMITER);
+
+	if (nome == NULL || ip == NULL || porta_str == NULL){
+		criar_mensagem(3, "ERRO: FALHA AO CAPTURAR UM TOKEN!");
+		return;
+	}
+
+	int porta = atoi(porta_str);
+
 	switch (ito)
 	{
 	case 0:
 		receber_resposta(); // ERRO
 		break;
+
 	case 1:
 		receber_resposta(); // SUCESSO
 		break;
+
 	case 3:
 		// SOLICITAÇÃO DE REGISTRO
 
-		contato novoContato;
-
 		if (qtdContatos == NUM_CONTATOS){
-			mandar_mensagem(3, "ERRO: MAXIMO DE CLIENTES ATINGIDO!");
-			return;
-		}
-
-		// captura e valida dados
-		char* nome	= strtok(NULL, DELIMITER);
-		char* ip	= strtok(NULL, DELIMITER);
-		char* porta	= strtok(NULL, DELIMITER);
-
-		if (nome == NULL || ip == NULL || porta == NULL){
-			mandar_mensagem(3, "ERRO: FALHA AO CAPTURAR UM TOKEN!");
+			criar_mensagem(3, "ERRO: MAXIMO DE CLIENTES ATINGIDO!");
 			return;
 		}
 
@@ -58,88 +62,66 @@ void tratar_pacote(char* pacote){
 		contato novoContato;
 		sprintf(novoContato.nome, "%s", nome);
 		sprintf(novoContato.ip, "%s", ip);
-		novoContato.porta	= atoi(porta);
+		novoContato.porta	= porta;
 
 		lista_contatos[qtdContatos-1] = novoContato;
+
 	case 2:
 		// DEVOLVE LISTA
 
-		char str_lista[] = "";
+		char str_lista[MAX_PACOTE] = "";
+		cria_lista(str_lista);
 
-		for(int i=0; i<qtdContatos; i++){
-			char tmp[40];
-			sprintf(tmp, "|%s|%s|%d", lista_contatos[i].nome, lista_contatos[i].ip, lista_contatos[i].porta);
-			strcat(str_lista, tmp);
-		}
-
-		mandar_mensagem(1, str_lista);
+		criar_mensagem(OK, str_lista);
 		return;
+
 	case 4:
 		receber_mensagem_cliente(); // TRATAR MENSAGEM RECEBIDA
 		break;
-	case 5:
-		{
-		// MANDAR MENSAGEM BROADCAST
-			char* msg = strtok(NULL, DELIMITER);
-	            	if (msg != NULL) {
-	                broadcast_message(msg);
-	            	} else {
-	                mandar_mensagem(ERRO, "ERRO");
-	            	}
+
+	case 5: // RECEBER MENSAGEM BROADCAST
+		char* msg 	= strtok(NULL, DELIMITER);
+
+		if (msg != NULL) {
+			broadcast_message(msg);
+		} else {
+			criar_mensagem(ERRO, "ERRO");
 		}
+	
 		break;
 	case 6:
-		{
-			// SOLICITAÇÃO PARA DEDSCONECTAR
-			int client_socket = atoi(strtok(NULL, DELIMITER));  // Obtém o socket do cliente que solicitou a desconexão
-	            	desconectar_cliente(client_socket);
-		}
+		
+		// SOLICITAÇÃO PARA DESCONECTAR
+		desconectar_cliente(nome, ip, porta);
+
 		break;
+
 	default:
 		break;
 	}
 }
 
-void broadcast_message(const char *message) {
-    char package[256];
-    snprintf(package, sizeof(package), "ITO5:%s", message);
+// Função Servidor
+char* desconectar_cliente(char* nome, char *ip, int porta) {
 
-    for (int i = 0; i < qtdContatos; i++) {
-        if (send(client_sockets[i], package, strlen(package), 0) == -1) {
-            perror("Erro ao enviar mensagem broadcast");
-        }
-    }
-}
-
-void desconectar_cliente(int client_socket) {
-    // Enviar mensagem de confirmação de desconexão
-    mandar_mensagem(OK, "Desconectado com sucesso");
-
-    // Fechar o socket do cliente
-    close(client_socket);
-
+	pthread_mutex_lock(&mutex_contatos);
     // Remover o cliente da lista de clientes
     for (int i = 0; i < qtdContatos; i++) {
-        if (client_sockets[i] == client_socket) {
-            // Desloca os outros sockets para preencher o espaço do cliente desconectado
-            for (int j = i; j < qtdContatos - 1; j++) {
-                client_sockets[j] = client_sockets[j + 1];
-            }
+        if (strcmp(lista_contatos[i].nome, nome) == 0) {
+			lista_contatos[i] = lista_contatos[qtdContatos-1];
             qtdContatos--;
             break;
         }
     }
-
-    printf("Cliente desconectado: socket %d\n", client_socket);
+	pthread_mutex_unlock(&mutex_contatos);
+    printf("Cliente desconectado: %s\n", nome);
 }
 
 void print_contatos(){
-	for(int i = 0; i < NUM_CONTATOS; i++){ // itera em vetor de contato até chegar em campo vazio ou fim de vetor
-		contato_esta_vazio(lista_contatos[i])){
-			printf("Saindo\n");
-			break;
-		}
-		printf("________________________");
+
+	printf("________________________\n");
+
+	for(int i = 0; i < qtdContatos; i++){
 		printf("Nome: %s\n", lista_contatos[i].nome);
 		printf("IP: %s\n", lista_contatos[i].ip);
 		printf("Porta: %d\n", lista_contatos[i].porta);
@@ -160,38 +142,24 @@ void m_concat_str(char** dest, contato contato){
     strcat(*dest,tmp);
 }
 
-// return: string de mensagem (type: char*)
-char* devolver_lista_servidor(){ // ""
-	char* PORTA;
-	char* msg = malloc(1);
-	char* pacote = malloc(5);
+char* criar_mensagem(int ito, char* msg){
+	char* pacote = malloc(MAX_PACOTE*sizeof(char));
 	int pacote_tam;
 
-	for(int i = 0; i < NUM_CONTATOS; i++){ // itera em vetor de contato até chegar em campo vazio ou fim de vetor
-		if(contato_esta_vazio(lista_contatos[i])){
-			printf("Saindo\n");
-			break;
-		}
-		m_concat_str(&msg, lista_contatos[i]); // transforma contato em string
-	}
-	// montagem do pacote
-	sprintf(pacote, "2|%03d", strlen(msg)-1);
+	sprintf(pacote, "%d|%03ld|%s|%s|%d|", ito, strlen(msg), meu_contato.nome, meu_contato.ip, meu_contato.porta);
 	pacote_tam = strlen(pacote) + strlen(msg);
 	pacote = realloc(pacote, pacote_tam);
 	strcat(pacote, msg);
 
-	return pacote; // retorna ou copia para o pacote passado em parâmetro?
+	return pacote;
 }
 
-void mandar_mensagem(int ito, char* msg){
-	char* pacote = malloc(5);
-	int pacote_tam;
-
-	sprintf(pacote, "%s|%03d",ito, strlen(msg)-1); // testar
-	pacote_tam = strlen(pacote) + strlen(msg);
-	pacote = realloc(pacote, pacote_tam);
-	strcat(pacote, msg);
-
+void cria_lista(char str_lista[]){
+	for(int i=0; i<qtdContatos; i++){
+		char tmp[40];
+		sprintf(tmp, "%s|%s|%d|", lista_contatos[i].nome, lista_contatos[i].ip, lista_contatos[i].porta);
+		strcat(str_lista, tmp);
+	}
 }
 
 void receber_resposta(){
@@ -200,16 +168,13 @@ void receber_resposta(){
 }
 
 void receber_mensagem_cliente(){
-	char* nome_r = strtok(NULL, DELIMITER);
-	char* IP_r = strtok(NULL, DELIMITER);
-	char* PORTA_r = strtok(NULL, DELIMITER);
 	char* msg = strtok(NULL, DELIMITER);
 
 	if(msg == NULL){
-		mandar_mensagem(ERRO,"ERRO");
+		criar_mensagem(ERRO,"ERRO");
+
 	}else{
-		mandar_mensagem(OK,"OK");
-		// printar mensagem (função? direto aqui?)
-		//mensagem de ok
+		criar_mensagem(OK,"OK");
+		// Adicionar memnsagem e nome no buffer de contatos
 	}
 }

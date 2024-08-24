@@ -14,13 +14,35 @@
 #include <pthread.h>
 #include "defines.h"
 
-// Lista de contatos
-contato lista_contatos[NUM_CONTATOS] = {0};
-// 1|002|matheus|ip|porta|oi
-int qtdContatos = 0;
+#include <ifaddrs.h>
+
+void get_ip(char* buffer_ip){
+    struct ifaddrs *interfaces = NULL;
+    struct ifaddrs *temp_addr = NULL;
+    int success = 0;
+
+    // Recupera as interfaces de rede do sistema
+    success = getifaddrs(&interfaces);
+    if (success == 0) {
+        // Itera sobre as interfaces e procura por uma IPv4
+        for (temp_addr = interfaces; temp_addr != NULL; temp_addr = temp_addr->ifa_next) {
+            if (temp_addr->ifa_addr->sa_family == AF_INET) {
+                // Ignora o loopback interface
+                if (strcmp(temp_addr->ifa_name, "lo") != 0) {
+                    // Copia o endereço IP
+                    strcpy(buffer_ip, inet_ntoa(((struct sockaddr_in *)temp_addr->ifa_addr)->sin_addr));
+                    break;
+                }
+            }
+        }
+    }
+
+    // Libera a memória alocada para as interfaces
+    freeifaddrs(interfaces);
+}
+
 
 // Funções de sockets
-
 int criar_socket(int porta)
 {
     int sock;

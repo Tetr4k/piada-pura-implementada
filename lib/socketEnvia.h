@@ -23,13 +23,13 @@ int sock = socket_envia(contato.ip, contato.porta, "4|000|nome|ip|porta");
     enviar_mensagem(mensagem, sock);    1
     receber_mensagem(mensagem, sock);   5
     5|100|nome|ip|porta|....
-    tratar_mensagem(mensagem);          6
+    tratar_pacote(mensagem);          6
 
 
 Servidor:
 -> socket_escuta
     receber_mensagem(mensagem, sock);     2
-    tratar_mensagem(mensagem);            3
+    tratar_pacote(mensagem);            3
     5|100|nome|ip|porta|....
     enviar_mensagem(mensagem, sock);      4
 */
@@ -47,6 +47,21 @@ int socket_envia(char* dst_ip, int dst_porta, char* mensagem){
 
     close(sock);
     return 1;
+}
+
+void broadcast_message(const char *message) {
+    char package[256];
+    snprintf(package, sizeof(package), "%s", message);
+
+	pthread_mutex_lock(&mutex_contatos);
+
+    for (int i = 0; i < qtdContatos; i++) {
+        if (socket_envia(lista_contatos[i].ip, lista_contatos[i].porta, package) < 0) {
+            perror("Erro ao enviar mensagem broadcast");
+        }
+    }
+
+	pthread_mutex_unlock(&mutex_contatos);
 }
 
 
