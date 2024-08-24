@@ -133,7 +133,7 @@ void desconectar_cliente(int client_socket) {
 
 void print_contatos(){
 	for(int i = 0; i < NUM_CONTATOS; i++){ // itera em vetor de contato até chegar em campo vazio ou fim de vetor
-		contato_esta_vazio(lista_contatos[i])){
+		if(contato_esta_vazio(lista_contatos[i])){
 			printf("Saindo\n");
 			break;
 		}
