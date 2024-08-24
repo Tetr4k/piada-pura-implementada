@@ -17,3 +17,6 @@ contato lista_contatos[NUM_CONTATOS] = {0};
 // 1|002|matheus|ip|porta|oi
 
 int qtdContatos = 0;
+
+mensagem buffer_msg[NUM_MSG];
+int buffer_ult = 0;
