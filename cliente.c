@@ -1,5 +1,4 @@
 
-#define PORTA_SERVIDOR 8888
 
 //args: <nome> <porta> <ipServidor>
 int main(int argc, char *argv[])  {
