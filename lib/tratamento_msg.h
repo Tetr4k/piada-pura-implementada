@@ -7,13 +7,11 @@
 
 // Mudar mandar respostas: nome não intuitivo!!!!!!
 
-void tratar_pacote(char* pacote);			// Redireciona para um tratamento de pacote de acordo com a ITO
-char* devolver_lista_servidor(); 			// "|NOME1|IP1|PORTA1|NOME2|IP2|PORTA2"
-void receber_resposta();				// Trata mensagem de ERRO/OK
-void mandar_mensagem(int ito, char* msg);		// Monta pacote de mensagem
-bool contato_esta_vazio(); 				// (AUX)Verifica se dado contato está vazio
-void m_concat_str(char** dest, contato contato); 	// (AUX) Concatena informações do contato em uma string => "|NOME|IP|PORTA"
-void print_contatos(); 					// Função para imprimir lista de contatos
+void tratar_pacote(char* pacote);					// Redireciona para um tratamento de pacote de acordo com a ITO
+void receber_resposta();							// Trata mensagem de ERRO/OK
+void mandar_mensagem(int ito, char* msg);			// Monta pacote de mensagem
+bool contato_esta_vazio(); 							// (AUX)Verifica se dado contato está vazio
+void print_contatos(); 								// Função para imprimir lista de contatos
 void broadcast_message(const char *message); 		// Função para enviar mensagem em broadcast
 void desconectar_cliente(int client_socket); 		// Função para desconectar cliente
 
