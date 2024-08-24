@@ -16,14 +16,22 @@
 #define TAM_MENSAGEM 255    
 #define PORTA_SERVIDOR 8888
 
+char mensagem[TAM_MENSAGEM];
+
 void limpaTela(){
     #ifdef __linux__
         system("clear");
     #elif _WIN32
         system("cls");
     #else
-
+         //Outros sistemas 
     #endif
+}
+
+//Função para limpar o buffer de entrada
+void limpar_buffer() {
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
 }
 
 void mostrar_menu() {
@@ -36,21 +44,28 @@ void mostrar_menu() {
 
 void opcao_1() {
     limpaTela();
-    //func enviar_mensagem()
-    printf("Você escolheu a Opção 1.\n");
+    
+    printf("Digite uma mensagem: ");
+    limpar_buffer();
+    fgets(mensagem, TAM_MENSAGEM, stdin); 
+    //func enviar_mensagem(mensagem)
+    printf("Mensagem enviada!\n");    
 }
 
 void opcao_2() {
     limpaTela();
-    //func mensagem_broadcast() // Mandar a mensagem como parâmetro
-    printf("Você escolheu a Opção 2.\n");
+
+    printf("Digite uma mensagem: ");
+    limpar_buffer();
+    fgets(mensagem, TAM_MENSAGEM, stdin); 
+    //func enviar_mensagem_broadcast(mensagem)
+    printf("Mensagem enviada!\n");
 }
 
 void opcao_3() {
     limpaTela();
-    //func receber_lista()
-    print_contatos();
-    printf("Você escolheu a Opção 3.\n");
+    printf("\nLista de contatos online:\n");
+    //print_contatos();
 }
 
 int main(int argc, char *argv[])  {
@@ -83,17 +98,15 @@ int main(int argc, char *argv[])  {
     strcpy(nome, argv[1]);  // Nome do usuário
     porta = atoi(argv[2]);  // Converte a string para inteiro
 
-    printf("Nome: %s\n", nome);
-    printf("Porta: %d\n", porta);
-    printf("IP do Servidor: %s\n", IP); 
 
     //SERVIDOR.c (add contato)
-    //print vc foi conectado 
-    //recebe lista
+    printf("Você foi conectado ao servidor.\n");
+    printf("\nLista de contatos online:\n");
+    //print_contatos();
 
     do {
         mostrar_menu();
-        printf("Escolha uma opção: ");
+        printf("\nEscolha uma opção: ");
         scanf("%d", &escolha);
 
         switch (escolha) {
