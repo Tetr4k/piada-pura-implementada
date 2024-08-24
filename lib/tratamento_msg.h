@@ -9,6 +9,7 @@
 
 void tratar_pacote(char* pacote);					// Redireciona para um tratamento de pacote de acordo com a ITO
 void receber_resposta();							// Trata mensagem de ERRO/OK
+void guardar_mensagem(char* nome, char* msg);		// Guardar a nova mensagem
 void mandar_mensagem(int ito, char* msg);			// Monta pacote de mensagem
 bool contato_esta_vazio(); 							// (AUX)Verifica se dado contato está vazio
 void print_contatos(); 								// Função para imprimir lista de contatos
@@ -165,11 +166,27 @@ void receber_resposta(){
 	printf("%s!\n",msg);
 }
 
+void guardar_mensagem(char* nome, char* msg){
+	if (buffer_ult = NUM_MSG - 1) //lista cheia
+	{
+		// ultimo --> primeiro
+		strcpy(buffer_msg[buffer_prim].nome, buffer_msg[buffer_ult].nome);
+		strcpy(buffer_msg[buffer_prim].mensagem, buffer_msg[buffer_ult].mensagem);
+	}
+	else{
+		buffer_ult++;
+	}
+	strcpy(buffer_msg[buffer_ult].nome, nome);
+	strcpy(buffer_msg[buffer_ult].mensagem, mensagem);	
+}
+
 void receber_mensagem_cliente(){
 	char* nome_r = strtok(NULL, DELIMITER);
 	char* IP_r = strtok(NULL, DELIMITER);
 	char* PORTA_r = strtok(NULL, DELIMITER);
 	char* msg = strtok(NULL, DELIMITER);
+
+	guardar_mensagem(nome_r, msg);
 
 	if(msg == NULL){
 		mandar_mensagem(ERRO,"ERRO");
