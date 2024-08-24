@@ -167,17 +167,24 @@ void receber_resposta(){
 }
 
 void guardar_mensagem(char* nome, char* msg){
-	if (buffer_ult = NUM_MSG - 1) //lista cheia
-	{
-		// ultimo --> primeiro
-		strcpy(buffer_msg[buffer_prim].nome, buffer_msg[buffer_ult].nome);
-		strcpy(buffer_msg[buffer_prim].mensagem, buffer_msg[buffer_ult].mensagem);
+	pthread_mutex_lock(&mutex_mensagens);
+
+	Mensagem nova_msg = (Mensagem){nome, msg};
+	
+	if (buffer_ult == NUM_MSG){
+		for(int i; i < NUM_MSG-1; i++){
+			memset(&buffer_msg[i], 0, sizeof(Mensagem));
+			memcpy(&buffer_msg[i], &buffer_msg[i+1], sizeof(Mensagem));
+		}
+		memset(&buffer_msg[4], 0, sizeof(Mensagem));
+		memcpy(&buffer_msg[4], &nova_msg, sizeof(Mensagem));
 	}
 	else{
+		memset(&buffer_msg[buffer_ult], 0, sizeof(Mensagem));
+		memcpy(&buffer_msg[buffer_ult], &nova_msg, sizeof(Mensagem));
 		buffer_ult++;
 	}
-	strcpy(buffer_msg[buffer_ult].nome, nome);
-	strcpy(buffer_msg[buffer_ult].mensagem, mensagem);	
+	pthread_mutex_unlock(&mutex_mensagens);	
 }
 
 void receber_mensagem_cliente(){
