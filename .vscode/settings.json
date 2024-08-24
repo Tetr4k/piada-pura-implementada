@@ -1,7 +1,0 @@
-{
-    "files.associations": {
-        "estruturas.h": "c",
-        "socketescuta.h": "c",
-        "tratamento_msg.h": "c"
-    }
-}
