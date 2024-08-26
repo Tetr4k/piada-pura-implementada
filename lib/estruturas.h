@@ -2,10 +2,9 @@
 
 // Talvez necessário
 typedef struct{
-	int ito;
-	int tam_pacote;
+	char nome[MAX_NAME];
 	char mensagem[MAX_STRING];
-} pacote;
+} mensagem;
 
 typedef struct {
 	char nome[MAX_NAME];
@@ -18,3 +17,6 @@ int qtdContatos = 0;
 contato lista_contatos[NUM_CONTATOS] = {0};
 
 contato meu_contato;
+
+mensagem buffer_msg[NUM_MSG] = {0};
+int buffer_ult = 0;

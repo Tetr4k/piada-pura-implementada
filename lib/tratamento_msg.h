@@ -93,7 +93,6 @@ void tratar_pacote(char* pacote){
 		
 		// SOLICITAÇÃO PARA DESCONECTAR
 		desconectar_cliente(nome, ip, porta);
-
 		break;
 
 	default:
@@ -165,6 +164,43 @@ void cria_lista(char str_lista[]){
 void receber_resposta(){
 	char* msg = strtok(NULL, DELIMITER);
 	printf("%s!\n",msg);
+}
+
+void guardar_mensagem(char* nome, char* msg){
+	pthread_mutex_lock(&mutex_mensagens);
+
+	mensagem nova_msg;
+
+	strncpy(nova_msg.nome, nome, MAX_NAME - 1);
+    nova_msg.nome[MAX_NAME - 1] = '\0'; // Garantir que a string será null-terminated
+
+    strncpy(nova_msg.mensagem, msg, MAX_STRING - 1);
+    nova_msg.mensagem[MAX_STRING - 1] = '\0'; // Garantir que a string será null-terminated
+
+	
+	// Caso o buffer esteja cheio
+	if (buffer_ult >= NUM_MSG){
+		for(int i=0; i < NUM_MSG-1; i++){
+			memset(&buffer_msg[i], 0, sizeof(mensagem));
+			memcpy(&buffer_msg[i], &buffer_msg[i+1], sizeof(mensagem));
+		}
+		memset(&buffer_msg[NUM_MSG-1], 0, sizeof(mensagem));
+		memcpy(&buffer_msg[NUM_MSG-1], &nova_msg, sizeof(mensagem));
+	}
+	else{
+		memset(&buffer_msg[buffer_ult], 0, sizeof(mensagem));
+		memcpy(&buffer_msg[buffer_ult], &nova_msg, sizeof(mensagem));
+		buffer_ult++;
+	}
+	
+	pthread_mutex_unlock(&mutex_mensagens);	
+}
+
+void print_mensagens(){
+	for(int i=0; i < NUM_MSG; i++)
+		printf("%s> %s\n", buffer_msg[i].nome, buffer_msg[i].mensagem);
+	
+	printf("________________________\n");
 }
 
 void receber_mensagem_cliente(){
