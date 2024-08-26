@@ -48,7 +48,10 @@ int socket_envia(char* dst_ip, int dst_porta, char* mensagem){
         return 0;
     }
     //Tratamento da resposta
-    tratar_pacote(mensagem);
+    int ito = tratar_pacote(mensagem);
+
+    // Caso receba erro
+    if(!ito) return 0;
 
     close(sock);
     return 1;
@@ -66,7 +69,7 @@ void broadcast_message(const char *message) {
 
         if(strcmp(lista_contatos[i].nome, meu_contato.nome) != 0){
             strncpy(buffer_package, package, MAX_PACOTE);
-            printf("BROADCASTING: %s => %s\n", lista_contatos[i].nome, buffer_package);
+            //printf("BROADCASTING: %s => %s\n", lista_contatos[i].nome, buffer_package);
 
             if (socket_envia(lista_contatos[i].ip, lista_contatos[i].porta, buffer_package) < 0) {
                 perror("Erro ao enviar mensagem broadcast");

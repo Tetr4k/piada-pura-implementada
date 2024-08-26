@@ -22,31 +22,21 @@ void atualiza_contatos();
 
 // Função para tratar pacote e redirecionar para o tipo de operação
 int tratar_pacote(char* pacote){
-	// Poderia retornar o ito, pois caso tenha erro a tela ou o socket tem q saber como tratar
 
 	int ito = atoi(strtok(pacote, DELIMITER));
 	int tam_pacote = atoi(strtok(NULL, DELIMITER));
-
-	printf("*\n");
 
 	// captura e valida dados
 	char* nome		= strtok(NULL, DELIMITER);
 	char* ip		= strtok(NULL, DELIMITER);
 	char* porta_str	= strtok(NULL, DELIMITER);
 
-	printf("**\n");
-
-
 	if (nome == NULL || ip == NULL || porta_str == NULL){
 		strncpy(pacote, criar_mensagem(0, "ERRO: FALHA AO CAPTURAR UM TOKEN!"), MAX_PACOTE);
 		return 0;
 	}
 
-	printf("***\n");
-
 	int porta = atoi(porta_str);
-
-	printf("****\n");
 
 	switch (ito)
 	{
@@ -80,15 +70,10 @@ int tratar_pacote(char* pacote){
 			return 0;
 		}
 
-		printf("Novo contato: %s\n", nome);
 		lista_contatos[qtdContatos] = novoContato;
 		qtdContatos++;
 
-		printf("Terminou de adicionar\n");
-
 		pthread_mutex_unlock(&mutex_contatos);
-
-		printf("Cria mensagem lista\n");
 		cria_mensagem_lista(pacote);
 		break;
 
@@ -181,10 +166,8 @@ void cria_lista(char str_lista[]){
 
 void cria_mensagem_lista(char *pacote){
 	// Gera lista de contatos nova
-	printf("1\n");
 	char str_lista[MAX_PACOTE] = "";
 	cria_lista(str_lista);
-	printf("2\n");
 	// Retorna a lista de contatos
 	strncpy(pacote, criar_mensagem(2, str_lista), MAX_PACOTE);
 }
