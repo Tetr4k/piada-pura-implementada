@@ -37,15 +37,14 @@ int main(int argc, char *argv[]) {
         strncpy(pacote, criar_mensagem(4, mensagem), MAX_PACOTE);
         //printf("ENVIADO: %s", pacote);
         socket_envia(server_ip, PORTA_SERVIDOR, pacote);
+        guardar_mensagem(meu_contato.nome, mensagem, 1);
+        //broadcast_message(criar_mensagem(5, mensagem));
 
         memset((void *) pacote,'\0',MAX_PACOTE);
 
         print_contatos();
         print_mensagens();
     }
-
-    // Broadcast
-    broadcast_message(criar_mensagem(5, "alou sou um broadcast!"));
 
     // DESLOGAR
     socket_envia(server_ip, PORTA_SERVIDOR, criar_mensagem(6, ""));

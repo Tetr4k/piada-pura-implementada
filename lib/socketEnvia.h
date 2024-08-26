@@ -42,9 +42,13 @@ int socket_envia(char* dst_ip, int dst_porta, char* mensagem){
 
     // Aqui vem a criação das mensagens
     enviar_mensagem(mensagem, sock);
-    receber_mensagem(mensagem, sock);
-    tratar_pacote(mensagem);
+
+    if(receber_mensagem(mensagem, sock)<0){
+        printf("Erro ao receber mensagem! SOCKET: %d\n", sock);fflush(stdout);
+        return 0;
+    }
     //Tratamento da resposta
+    tratar_pacote(mensagem);
 
     close(sock);
     return 1;
@@ -54,11 +58,21 @@ void broadcast_message(const char *message) {
     char package[MAX_PACOTE];
     snprintf(package, sizeof(package), "%s", message);
 
+    char buffer_package[MAX_PACOTE] = "";
+
 	pthread_mutex_lock(&mutex_contatos);
 
     for (int i = 0; i < qtdContatos; i++) {
-        if (socket_envia(lista_contatos[i].ip, lista_contatos[i].porta, package) < 0) {
-            perror("Erro ao enviar mensagem broadcast");
+
+        if(strcmp(lista_contatos[i].nome, meu_contato.nome) != 0){
+            strncpy(buffer_package, package, MAX_PACOTE);
+            printf("BROADCASTING: %s => %s\n", lista_contatos[i].nome, buffer_package);
+
+            if (socket_envia(lista_contatos[i].ip, lista_contatos[i].porta, buffer_package) < 0) {
+                perror("Erro ao enviar mensagem broadcast");
+            }
+
+            memset(buffer_package, '\0', MAX_PACOTE);
         }
     }
 

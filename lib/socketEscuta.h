@@ -17,10 +17,10 @@ void* thread_socket_comunicacao(void* sock){
     }
 
     // Com tratar_pacote
-    printf("**%s**\n", mensagem);
+    printf("1**%s**\n", mensagem);
     int ito = tratar_pacote(mensagem); // <- erro
 
-    printf("**%s**\n", mensagem);
+    printf("2**%s**\n", mensagem);
     enviar_mensagem(mensagem, socket_cliente);
 
     // Caso resposta em broadcast
@@ -80,6 +80,7 @@ int socket_escuta(int porta){
     socket_escuta = criar_socket(porta);
     if (socket_escuta < 0){
         printf("\nErro na criação do socket de escuta na porta: %d!\n", porta);fflush(stdout);
+        exit(0);
         return -1;
     }
 
@@ -87,6 +88,7 @@ int socket_escuta(int porta){
     int* sock_escuta_ptr = malloc(sizeof(int));
     if (sock_escuta_ptr == NULL) {
         printf("Erro ao alocar memória para o socket de escuta\n");
+        exit(0);
         return -1;
     }
     *sock_escuta_ptr = socket_escuta;

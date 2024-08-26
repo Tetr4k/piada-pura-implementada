@@ -62,7 +62,7 @@ int tratar_pacote(char* pacote){
 		
 		// atualizar lista de contatos
 		atualiza_contatos();
-		strncpy(pacote, criar_mensagem(OK, ""), MAX_PACOTE);
+		strncpy(pacote, criar_mensagem(OK, "ok"), MAX_PACOTE);
 		break;
 
 	case 3: // SOLICITAÇÃO DE REGISTRO (Servidor)
@@ -181,10 +181,10 @@ void cria_lista(char str_lista[]){
 
 void cria_mensagem_lista(char *pacote){
 	// Gera lista de contatos nova
-	printf("1");
+	printf("1\n");
 	char str_lista[MAX_PACOTE] = "";
 	cria_lista(str_lista);
-	printf("2");
+	printf("2\n");
 	// Retorna a lista de contatos
 	strncpy(pacote, criar_mensagem(2, str_lista), MAX_PACOTE);
 }
