@@ -9,7 +9,6 @@
 
 int tratar_pacote(char* pacote);									// Redireciona para um tratamento de pacote de acordo com a ITO
 char* devolver_lista_servidor(); 									// "|NOME1|IP1|PORTA1|NOME2|IP2|PORTA2"
-void receber_resposta();											// Trata mensagem de ERRO/OK
 char* criar_mensagem(int ito, char* msg);							// Monta pacote de mensagem
 void print_contatos(); 												// Função para imprimir lista de contatos
 void broadcast_message(const char *message); 						// Função para enviar mensagem em broadcast
@@ -73,6 +72,8 @@ int tratar_pacote(char* pacote){
 		lista_contatos[qtdContatos] = novoContato;
 		qtdContatos++;
 
+		printf("Novo cliente: %s\n", novoContato.nome);
+
 		pthread_mutex_unlock(&mutex_contatos);
 		cria_mensagem_lista(pacote);
 		break;
@@ -130,6 +131,7 @@ void print_contatos(){
 	pthread_mutex_lock(&mutex_contatos);
 
 	for(int i = 0; i < qtdContatos; i++){
+		printf("ID: %d\n", i);
 		printf("Nome: %s\n", lista_contatos[i].nome);
 		printf("IP: %s\n", lista_contatos[i].ip);
 		printf("Porta: %d\n", lista_contatos[i].porta);
@@ -204,11 +206,6 @@ void atualiza_contatos(){
 	pthread_mutex_unlock(&mutex_contatos);
 }
 
-void receber_resposta(){
-	char* msg = strtok(NULL, DELIMITER);
-	printf("%s!\n",msg);
-}
-
 void guardar_mensagem(char* nome, char* msg, int broadcast){
 	pthread_mutex_lock(&mutex_mensagens);
 
@@ -241,8 +238,11 @@ void guardar_mensagem(char* nome, char* msg, int broadcast){
 }
 
 void print_mensagens(){
-	for(int i=0; i < NUM_MSG; i++)
+	for(int i=0; i < NUM_MSG; i++){
+		if(buffer_msg[i].broadcast)
+			printf("!BROADCAST! ");
 		printf("%s> %s\n", buffer_msg[i].nome, buffer_msg[i].mensagem);
+	}
 	
 	printf("________________________\n");
 }

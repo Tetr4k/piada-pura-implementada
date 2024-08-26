@@ -103,7 +103,7 @@ int receber_mensagem(char *mensagem, int sock)
         return(-1);
     }
 
-    printf("Recebido: %s\n", mensagem);
+    //printf("Recebido: %s\n", mensagem);
     return(0);
 }
 
@@ -116,7 +116,7 @@ int enviar_mensagem(char *mensagem, int sock)
         return(-1);
     }
 
-    printf("Enviado: %s\n", mensagem);
+    //printf("Enviado: %s\n", mensagem);
 
     return(0);
 }

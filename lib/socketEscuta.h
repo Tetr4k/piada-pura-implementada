@@ -17,10 +17,7 @@ void* thread_socket_comunicacao(void* sock){
     }
 
     // Com tratar_pacote
-    printf("1**%s**\n", mensagem);
-    int ito = tratar_pacote(mensagem); // <- erro
-
-    printf("2**%s**\n", mensagem);
+    int ito = tratar_pacote(mensagem); 
     enviar_mensagem(mensagem, socket_cliente);
 
     // Caso resposta em broadcast
