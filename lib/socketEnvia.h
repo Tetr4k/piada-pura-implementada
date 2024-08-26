@@ -43,6 +43,7 @@ int socket_envia(char* dst_ip, int dst_porta, char* mensagem){
     // Aqui vem a criação das mensagens
     enviar_mensagem(mensagem, sock);
     receber_mensagem(mensagem, sock);
+    tratar_pacote(mensagem);
     //Tratamento da resposta
 
     close(sock);
@@ -50,7 +51,7 @@ int socket_envia(char* dst_ip, int dst_porta, char* mensagem){
 }
 
 void broadcast_message(const char *message) {
-    char package[256];
+    char package[MAX_PACOTE];
     snprintf(package, sizeof(package), "%s", message);
 
 	pthread_mutex_lock(&mutex_contatos);

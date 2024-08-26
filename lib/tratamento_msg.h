@@ -7,97 +7,119 @@
 
 // Mudar mandar respostas: nome não intuitivo!!!!!!
 
-void tratar_pacote(char* pacote);									// Redireciona para um tratamento de pacote de acordo com a ITO
+int tratar_pacote(char* pacote);									// Redireciona para um tratamento de pacote de acordo com a ITO
 char* devolver_lista_servidor(); 									// "|NOME1|IP1|PORTA1|NOME2|IP2|PORTA2"
 void receber_resposta();											// Trata mensagem de ERRO/OK
 char* criar_mensagem(int ito, char* msg);							// Monta pacote de mensagem
-bool contato_esta_vazio(); 											// (AUX)Verifica se dado contato está vazio
-void m_concat_str(char** dest, contato contato); 					// (AUX) Concatena informações do contato em uma string => "|NOME|IP|PORTA"
 void print_contatos(); 												// Função para imprimir lista de contatos
 void broadcast_message(const char *message); 						// Função para enviar mensagem em broadcast
 char* desconectar_cliente(char *nome, char *ip, int porta); 		// Função para desconectar cliente
 void cria_lista(char str_lista[]);									// Cria a lista de contato passada por referência
-void receber_mensagem_cliente();									// Processa a mensagem recebida e a coloca no buffer_msg
+int receber_mensagem_cliente(char *nome, int broadcast);			// Processa a mensagem recebida e a coloca no buffer_msg
+void cria_mensagem_lista(char* pacote);
+void atualiza_contatos();
 
 
 // Função para tratar pacote e redirecionar para o tipo de operação
-void tratar_pacote(char* pacote){
+int tratar_pacote(char* pacote){
+	// Poderia retornar o ito, pois caso tenha erro a tela ou o socket tem q saber como tratar
 
 	int ito = atoi(strtok(pacote, DELIMITER));
 	int tam_pacote = atoi(strtok(NULL, DELIMITER));
+
+	printf("*\n");
 
 	// captura e valida dados
 	char* nome		= strtok(NULL, DELIMITER);
 	char* ip		= strtok(NULL, DELIMITER);
 	char* porta_str	= strtok(NULL, DELIMITER);
 
+	printf("**\n");
+
+
 	if (nome == NULL || ip == NULL || porta_str == NULL){
-		criar_mensagem(3, "ERRO: FALHA AO CAPTURAR UM TOKEN!");
-		return;
+		strncpy(pacote, criar_mensagem(0, "ERRO: FALHA AO CAPTURAR UM TOKEN!"), MAX_PACOTE);
+		return 0;
 	}
 
+	printf("***\n");
+
 	int porta = atoi(porta_str);
+
+	printf("****\n");
 
 	switch (ito)
 	{
 	case 0:
-		receber_resposta(); // ERRO
+		//receber_resposta(); // ERRO
 		break;
 
 	case 1:
-		receber_resposta(); // SUCESSO
+		//receber_resposta(); // SUCESSO
 		break;
 
-	case 3:
-		// SOLICITAÇÃO DE REGISTRO
+	case 2: // RECEBI LISTA (Cliente)
+		
+		// atualizar lista de contatos
+		atualiza_contatos();
+		strncpy(pacote, criar_mensagem(OK, ""), MAX_PACOTE);
+		break;
 
-		if (qtdContatos == NUM_CONTATOS){
-			criar_mensagem(3, "ERRO: MAXIMO DE CLIENTES ATINGIDO!");
-			return;
-		}
-
-		// adiciona contato a lista de contatos
-		qtdContatos++;
+	case 3: // SOLICITAÇÃO DE REGISTRO (Servidor)
 
 		contato novoContato;
 		sprintf(novoContato.nome, "%s", nome);
 		sprintf(novoContato.ip, "%s", ip);
 		novoContato.porta	= porta;
 
-		lista_contatos[qtdContatos-1] = novoContato;
+		// adiciona contato a lista de contatos
+		pthread_mutex_lock(&mutex_contatos);
 
-	case 2:
-		// DEVOLVE LISTA
+		if (qtdContatos >= NUM_CONTATOS){
+			strncpy(pacote, criar_mensagem(0, "ERRO: MAXIMO DE CLIENTES ATINGIDO!"), MAX_PACOTE);
+			return 0;
+		}
 
-		char str_lista[MAX_PACOTE] = "";
-		cria_lista(str_lista);
+		printf("Novo contato: %s\n", nome);
+		lista_contatos[qtdContatos] = novoContato;
+		qtdContatos++;
 
-		criar_mensagem(OK, str_lista);
-		return;
+		printf("Terminou de adicionar\n");
 
-	case 4:
-		receber_mensagem_cliente(); // TRATAR MENSAGEM RECEBIDA
+		pthread_mutex_unlock(&mutex_contatos);
+
+		printf("Cria mensagem lista\n");
+		cria_mensagem_lista(pacote);
+		break;
+
+	case 4: // TRATAR MENSAGEM RECEBIDA
+		if (!receber_mensagem_cliente(nome, 0))
+			strncpy(pacote, criar_mensagem(0, "ERRO: Mensagem vazia!"), MAX_PACOTE);
+		else
+			strncpy(pacote, criar_mensagem(1, ""), MAX_PACOTE);
+
 		break;
 
 	case 5: // RECEBER MENSAGEM BROADCAST
-		char* msg 	= strtok(NULL, DELIMITER);
+		if (!receber_mensagem_cliente(nome, 1))
+			strncpy(pacote, criar_mensagem(0, "ERRO: Mensagem vazia!"), MAX_PACOTE);
+		else
+			strncpy(pacote, criar_mensagem(1, ""), MAX_PACOTE); 
 
-		if (msg != NULL) {
-			broadcast_message(msg);
-		} else {
-			criar_mensagem(ERRO, "ERRO");
-		}
-	
 		break;
+
 	case 6:
 		
 		// SOLICITAÇÃO PARA DESCONECTAR
 		desconectar_cliente(nome, ip, porta);
+		cria_mensagem_lista(pacote);
 		break;
 
 	default:
 		break;
 	}
+
+	return ito;
 }
 
 // Função Servidor
@@ -120,25 +142,16 @@ void print_contatos(){
 
 	printf("________________________\n");
 
+	pthread_mutex_lock(&mutex_contatos);
+
 	for(int i = 0; i < qtdContatos; i++){
 		printf("Nome: %s\n", lista_contatos[i].nome);
 		printf("IP: %s\n", lista_contatos[i].ip);
 		printf("Porta: %d\n", lista_contatos[i].porta);
 		printf("________________________\n");
 	}
-}
 
-bool contato_esta_vazio(contato tmp){
-	bool result = (tmp.nome[0] == '\0') && (tmp.ip[0] == '\0') && (tmp.porta == 0);
-	return result;
-}
-// what: concatena contato a mensagem
-void m_concat_str(char** dest, contato contato){
-    char tmp[40];
-    sprintf(tmp, "|%s|%s|%d", contato.nome, contato.ip, contato.porta);
- 	int tamanho_total = strlen(*dest) + strlen(tmp); // +1 for caractere +1 for '\0'
-    *dest = realloc(*dest, tamanho_total);
-    strcat(*dest,tmp);
+	pthread_mutex_unlock(&mutex_contatos);
 }
 
 char* criar_mensagem(int ito, char* msg){
@@ -154,11 +167,58 @@ char* criar_mensagem(int ito, char* msg){
 }
 
 void cria_lista(char str_lista[]){
+
+	pthread_mutex_lock(&mutex_contatos);
+
 	for(int i=0; i<qtdContatos; i++){
 		char tmp[40];
 		sprintf(tmp, "%s|%s|%d|", lista_contatos[i].nome, lista_contatos[i].ip, lista_contatos[i].porta);
 		strcat(str_lista, tmp);
 	}
+
+	pthread_mutex_unlock(&mutex_contatos);
+}
+
+void cria_mensagem_lista(char *pacote){
+	// Gera lista de contatos nova
+	printf("1");
+	char str_lista[MAX_PACOTE] = "";
+	cria_lista(str_lista);
+	printf("2");
+	// Retorna a lista de contatos
+	strncpy(pacote, criar_mensagem(2, str_lista), MAX_PACOTE);
+}
+
+void atualiza_contatos(){
+	pthread_mutex_lock(&mutex_contatos);
+
+	memset(lista_contatos, 0, NUM_CONTATOS*sizeof(contato));
+
+	int contador = 0;
+    char* token = strtok(NULL, "|");
+    
+    while (token != NULL && contador < NUM_CONTATOS) {
+        strncpy(lista_contatos[contador].nome, token, MAX_NAME);
+        lista_contatos[contador].nome[MAX_NAME - 1] = '\0';
+        
+        token = strtok(NULL, "|");
+        if (token != NULL) {
+            strncpy(lista_contatos[contador].ip, token, 16);
+            lista_contatos[contador].ip[15] = '\0';
+        }
+
+        token = strtok(NULL, "|");
+        if (token != NULL) {
+            lista_contatos[contador].porta = atoi(token);
+        }
+
+        contador++;
+        token = strtok(NULL, "|");
+    }
+
+	qtdContatos = contador;
+
+	pthread_mutex_unlock(&mutex_contatos);
 }
 
 void receber_resposta(){
@@ -166,7 +226,7 @@ void receber_resposta(){
 	printf("%s!\n",msg);
 }
 
-void guardar_mensagem(char* nome, char* msg){
+void guardar_mensagem(char* nome, char* msg, int broadcast){
 	pthread_mutex_lock(&mutex_mensagens);
 
 	mensagem nova_msg;
@@ -177,7 +237,8 @@ void guardar_mensagem(char* nome, char* msg){
     strncpy(nova_msg.mensagem, msg, MAX_STRING - 1);
     nova_msg.mensagem[MAX_STRING - 1] = '\0'; // Garantir que a string será null-terminated
 
-	
+	nova_msg.broadcast = broadcast;
+
 	// Caso o buffer esteja cheio
 	if (buffer_ult >= NUM_MSG){
 		for(int i=0; i < NUM_MSG-1; i++){
@@ -203,14 +264,12 @@ void print_mensagens(){
 	printf("________________________\n");
 }
 
-void receber_mensagem_cliente(){
+int receber_mensagem_cliente(char nome[MAX_NAME], int broadcast){
 	char* msg = strtok(NULL, DELIMITER);
 
-	if(msg == NULL){
-		criar_mensagem(ERRO,"ERRO");
+	if(msg == NULL)
+		return 0;
 
-	}else{
-		criar_mensagem(OK,"OK");
-		// Adicionar memnsagem e nome no buffer de contatos
-	}
+	guardar_mensagem(nome, msg, broadcast);
+	return 1;
 }

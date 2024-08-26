@@ -41,6 +41,15 @@ void get_ip(char* buffer_ip){
     freeifaddrs(interfaces);
 }
 
+void init_meu_contato(char* nome, int porta_escuta){
+    // Variavel global para outras funções
+    meu_contato.porta = porta_escuta;
+    get_ip(meu_contato.ip);
+    strncpy(meu_contato.nome, nome, MAX_NAME);
+
+    printf("Nome: %s\nIP: %s\nPorta: %d\n\n", meu_contato.nome, meu_contato.ip, meu_contato.porta); 
+}
+
 
 // Funções de sockets
 int criar_socket(int porta)
@@ -85,10 +94,10 @@ int criar_socket(int porta)
 int receber_mensagem(char *mensagem, int sock)
 {
     /* Limpar o buffer da mensagem */
-    memset((void *) mensagem, '\0', MAX_STRING);
+    memset((void *) mensagem, '\0', MAX_PACOTE);
 
     /* Espera pela recep��o de alguma mensagem do cliente conectado*/
-    if (recv(sock, mensagem, MAX_STRING, 0) < 0)
+    if (recv(sock, mensagem, MAX_PACOTE, 0) < 0)
     {
         printf("\nErro na recepção da mensagem\n");fflush(stdout);
         return(-1);

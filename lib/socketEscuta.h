@@ -1,6 +1,5 @@
 //#include "socket.h"
 
-
 void* thread_socket_comunicacao(void* sock){
     // Le a mensagem
     // Trata ela de maneira correspondente
@@ -10,7 +9,7 @@ void* thread_socket_comunicacao(void* sock){
     int socket_cliente = *((int*)sock);
     free(sock);
 
-    char mensagem[MAX_STRING];    /* Buffer para a recepção da mensagem*/
+    char mensagem[MAX_PACOTE];    /* Buffer para a recepção da mensagem*/
 
     if(receber_mensagem(mensagem, socket_cliente)<0){
         printf("Erro ao receber mensagem! SOCKET: %d\n", socket_cliente);fflush(stdout);
@@ -18,11 +17,16 @@ void* thread_socket_comunicacao(void* sock){
     }
 
     // Com tratar_pacote
-    tratar_pacote(mensagem);
+    printf("**%s**\n", mensagem);
+    int ito = tratar_pacote(mensagem); // <- erro
+
+    printf("**%s**\n", mensagem);
     enviar_mensagem(mensagem, socket_cliente);
 
-    // Sem tratar mensagem
-    //enviar_mensagem("OK!", socket_cliente);
+    // Caso resposta em broadcast
+    if((ito == 3) || (ito == 6))
+        broadcast_message(mensagem);
+
     close(socket_cliente);
 }
 

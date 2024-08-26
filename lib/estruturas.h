@@ -4,6 +4,7 @@
 typedef struct{
 	char nome[MAX_NAME];
 	char mensagem[MAX_STRING];
+	int broadcast; // se 1 é broadcast
 } mensagem;
 
 typedef struct {
